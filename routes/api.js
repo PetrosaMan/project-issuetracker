@@ -114,7 +114,7 @@ module.exports = function (app) {
         }
       });
       if (Object.keys(updateObject).length < 2) {
-        return res.json('no update field(s) sent');
+        return res.json("no update field(s) sent");
       }
       try {
         updateObject.updated_on = new Date().toUTCString();
@@ -123,11 +123,11 @@ module.exports = function (app) {
           new: true,
         });
       } catch (error) {
-        return res.json( "could not update" + req.body._id );
+        return res.json("could not update" + req.body._id);
       }
-      return res.json( "successfully updated");
+      return res.json("successfully updated");
     })
-    
+
     .delete(async function (req, res) {
       const { projectname } = req.params;
       const { _id } = req.body;
@@ -138,7 +138,8 @@ module.exports = function (app) {
       try {
         // Delete the issue from database
         const deletedIssue = await Issue.findByIdAndDelete({
-          projectname, _id,           
+          projectname,
+          _id,
         });
         //Check that issue was found and deleted
         if (!deletedIssue) {
