@@ -1,4 +1,5 @@
 "use strict";
+const bodyParser = require("body-parser");
 const mongodb = require("mongodb");
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
@@ -21,7 +22,7 @@ const issueSchema = new Schema({
   updated_on: { type: Date, required: true },
   created_by: { type: String, required: true },
   assigned_to: String,
-  open: { type: Boolean, required: true },
+  open: Boolean,
   status_text: String,
   project: String,
 });
@@ -113,7 +114,7 @@ module.exports = function (app) {
         }
       });
       if (Object.keys(updateObject).length < 2) {
-        return res.json({ error: "no update field(s) sent", _id: id });
+        return res.json('no update field(s) sent');
       }
       try {
         updateObject.updated_on = new Date().toUTCString();
@@ -122,10 +123,11 @@ module.exports = function (app) {
           new: true,
         });
       } catch (error) {
-        return res.json({ error: "could not update", _id: id });
+        return res.json( "could not update" + req.body._id );
       }
-      return res.json({ result: "sucessfully updated", _id: id });
+      return res.json( "successfully updated");
     })
+    
     .delete(async function (req, res) {
       const { projectname } = req.params;
       const { _id } = req.body;
@@ -136,10 +138,9 @@ module.exports = function (app) {
       try {
         // Delete the issue from database
         const deletedIssue = await Issue.findByIdAndDelete({
-          projectname,
-          _id,
+          projectname, _id,           
         });
-        // Check that issue was found and deleted
+        //Check that issue was found and deleted
         if (!deletedIssue) {
           return res.status(404).json({ error: "could not delete", _id });
         }
