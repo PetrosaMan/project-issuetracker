@@ -135,8 +135,8 @@ module.exports = function (app) {
     })
 
     .delete(async function (req, res) {
-      const { projectname } = req.params;
-      console.log("***** => ",req.body);
+      const { projectname } = req.params
+      console.log("*** => ",req.body);
       // set _id = ""; when testing for a missing _id
       let { _id } = req.body;      
       // Checkthat _id is provided
