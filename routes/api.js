@@ -46,11 +46,9 @@ module.exports = function (app) {
     .get(async function (req, res) {
       const project = req.params.project;
       const filterObject = Object.assign(req.query);
-      filterObject["project"] = project;
-      //console.log(filterObject);
+      filterObject["project"] = project;      
       await Issue.find(filterObject)
-        .then((arrayOfResults) => {
-          //console.log(arrayOfResults);
+        .then((arrayOfResults) => {          
           return res.json(arrayOfResults);
         })
         .catch((err) => {
@@ -101,9 +99,10 @@ module.exports = function (app) {
 
     .put(async function (req, res) {
       const project = req.params.project;
+      console.log("req.params*** ",req.params)
       let id = req.body._id;
-
-      if (id === "") {
+        
+      if (!id) {
         res.json({ error: "missing _id" });
         return;
       }
@@ -113,44 +112,49 @@ module.exports = function (app) {
           updateObject[key] = req.body[key];
         }
       });
+      
       if (Object.keys(updateObject).length < 2) {
-        return res.json("no update field(s) sent");
-      }
+        return res.json({ error: "no update field(s) sent", _id: id });
+      }      
+      
       try {
-        updateObject.updated_on = new Date().toUTCString();
-        console.log(updateObject);
+        updateObject.updated_on = new Date().toUTCString();        
         let doc = await Issue.findOneAndUpdate({ _id: id }, updateObject, {
           new: true,
         });
+      // add code below the line
+        if (!doc) {
+          return res.json({ error: "could not update", _id: id });
+        }
+        return res.json({ result: "successfully updated", _id: id });
+      // add code above this line  
       } catch (error) {
-        return res.json("could not update" + req.body._id);
+        return res.json({ error: "could not update", _id: id });
       }
-      return res.json("successfully updated");
+      //return res.json({ result: "successfully updated", _id: id });
     })
 
     .delete(async function (req, res) {
       const { projectname } = req.params;
-      const { _id } = req.body;
+      console.log("***** => ",req.body);
+      // set _id = ""; when testing for a missing _id
+      let { _id } = req.body;      
       // Checkthat _id is provided
       if (!_id) {
-        return res.status(400).json({ error: "missing _id" });
+        return res.json({ error: "missing _id" });
       }
       try {
         // Delete the issue from database
-        const deletedIssue = await Issue.findByIdAndDelete({
-          projectname,
-          _id,
-        });
+        const deletedIssue = await Issue.findByIdAndDelete(_id );
         //Check that issue was found and deleted
         if (!deletedIssue) {
-          return res.status(404).json({ error: "could not delete", _id });
+          return res.json({ error: "could not delete", _id: _id });
         }
         // Issue successfully deleted
-        return res.status(200).json({ result: "successfully deleted", _id });
+        return res.json({ result: "successfully deleted", _id: _id });
       } catch (error) {
-        // Internal server error
-        console.error("Error deleting issue, error");
-        return res.status(500).json({ error: "internal server error" });
-      }
+        // server error
+        return res.json({ error: "internal server error", _id: _id });
+      } 
     });
-};
+}
