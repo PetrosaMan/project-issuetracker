@@ -98,10 +98,8 @@ module.exports = function (app) {
     })
 
     .put(async function (req, res) {
-      const project = req.params.project;
-      console.log("req.params*** ",req.params)
-      let id = req.body._id;
-        
+      const project = req.params.project;      
+      let id = req.body._id;        
       if (!id) {
         res.json({ error: "missing _id" });
         return;
@@ -130,8 +128,7 @@ module.exports = function (app) {
       // add code above this line  
       } catch (error) {
         return res.json({ error: "could not update", _id: id });
-      }
-      //return res.json({ result: "successfully updated", _id: id });
+      }      
     })
 
     .delete(async function (req, res) {
