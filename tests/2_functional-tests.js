@@ -134,6 +134,7 @@ suite("Functional Tests", function () {
           .send({
             _id: issue1._id,
             issue_title: "different",
+            issue_text: "second field"
           })
           .end(function (err, res) {
             // removed: async from this function
