@@ -9,9 +9,6 @@ chai.use(chaiHttp);
 let issue1;
 let issue2;
 
-//let id1 = "";
-//let id2 = "";
-
 suite("Functional Tests", function () {
   suite("POST /api/issues/{project} => object with issue data", function () {
     test("All fields filled in", function (done) {
@@ -33,8 +30,7 @@ suite("Functional Tests", function () {
           assert.equal(res.body.created_by, "FCC");
           assert.equal(res.body.assigned_to, "Dom");
           assert.equal(res.body.status_text, "Not Done");
-          assert.equal(res.body.project, "test");
-          id1 = res.body._id;
+          assert.equal(res.body.project, "test");          
           done();
         });
     }).timeout(10000);
@@ -59,8 +55,7 @@ suite("Functional Tests", function () {
           assert.equal(res.body.created_by, "FCC");
           assert.equal(res.body.assigned_to, "");
           assert.equal(res.body.status_text, "");
-          assert.equal(res.body.project, "test");
-          id2 = res.body._id;
+          assert.equal(res.body.project, "test");          
           done();
         });
     }).timeout(5000);
@@ -90,6 +85,7 @@ suite("Functional Tests", function () {
           .request(server)
           .get("/api/issues/test")
           .end(function (err, res) {
+            assert.equal(res.status, 200);
             done();
           });
       });
@@ -136,8 +132,7 @@ suite("Functional Tests", function () {
             issue_title: "different",
             issue_text: "second field"
           })
-          .end(function (err, res) {
-            // removed: async from this function
+          .end(function (err, res) {            
             assert.equal(res.status, 200);
             assert.equal(res.body.result, "successfully updated");
             assert.equal(res.body._id, issue1._id);
